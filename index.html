@@ -78,7 +78,6 @@
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        transition: 0.3s;
     }
 
     button:hover {
@@ -113,8 +112,14 @@
         </div>
 
         <div class="form-group">
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+            <div id="dobError" class="error"></div>
+        </div>
+
+        <div class="form-group">
             <label>Age</label>
-            <input type="number" id="age">
+            <input type="number" id="age" readonly>
             <div id="ageError" class="error"></div>
         </div>
 
@@ -178,12 +183,28 @@
 </div>
 
 <script>
+// Auto calculate age from DOB
+document.getElementById("dob").addEventListener("change", function () {
+    let dob = new Date(this.value);
+    let today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+    let m = today.getMonth() - dob.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+
+    document.getElementById("age").value = age;
+});
+
 function validateForm() {
     let valid = true;
 
     let name = document.getElementById("name").value.trim();
     let email = document.getElementById("email").value.trim();
     let phone = document.getElementById("phone").value.trim();
+    let dob = document.getElementById("dob").value;
     let age = document.getElementById("age").value;
     let gender = document.getElementById("gender").value;
     let department = document.getElementById("department").value;
@@ -197,52 +218,49 @@ function validateForm() {
     // Name
     let namePattern = /^[A-Za-z ]{3,}$/;
     if (!name.match(namePattern)) {
-        document.getElementById("nameError").innerText =
-            "Enter valid name (min 3 letters)";
+        document.getElementById("nameError").innerText = "Enter valid name";
         valid = false;
     }
 
     // Email
     let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
     if (!email.match(emailPattern)) {
-        document.getElementById("emailError").innerText =
-            "Enter valid email";
+        document.getElementById("emailError").innerText = "Enter valid email";
         valid = false;
     }
 
     // Phone
     let phonePattern = /^[0-9]{10}$/;
     if (!phone.match(phonePattern)) {
-        document.getElementById("phoneError").innerText =
-            "Enter valid 10-digit number";
+        document.getElementById("phoneError").innerText = "Enter valid phone";
         valid = false;
     }
 
-    // Age
-    if (age === "" || age < 16 || age > 60) {
-        document.getElementById("ageError").innerText =
-            "Age must be 16–60";
+    // DOB + Age validation
+    if (dob === "") {
+        document.getElementById("dobError").innerText = "Select DOB";
+        valid = false;
+    } else if (age < 16 || age > 60) {
+        document.getElementById("dobError").innerText =
+            "Age must be between 16 and 60";
         valid = false;
     }
 
     // Gender
     if (gender === "") {
-        document.getElementById("genderError").innerText =
-            "Select gender";
+        document.getElementById("genderError").innerText = "Select gender";
         valid = false;
     }
 
     // Department
     if (department === "") {
-        document.getElementById("deptError").innerText =
-            "Select department";
+        document.getElementById("deptError").innerText = "Select department";
         valid = false;
     }
 
     // Course
     if (course === "") {
-        document.getElementById("courseError").innerText =
-            "Select course";
+        document.getElementById("courseError").innerText = "Select course";
         valid = false;
     }
 
@@ -257,7 +275,7 @@ function validateForm() {
     let passPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W]).{6,}$/;
     if (!password.match(passPattern)) {
         document.getElementById("passwordError").innerText =
-            "Min 6 chars, include uppercase, number & symbol";
+            "Weak password";
         valid = false;
     }
 
@@ -271,220 +289,9 @@ function validateForm() {
     // Save
     if (valid) {
         let student = {
-            name, email, phone, age, gender,
-            department, course, address
+            name, email, phone, dob, age,
+            gender, department, course, address
         };
-
-        let students = JSON.parse(localStorage.getItem("students")) || [];
-        students.push(student);
-        localStorage.setItem("students", JSON.stringify(students));
-
-        alert("Registration Successful!");
-        document.querySelector("form").reset();
-    }
-
-    return false;
-}
-</script>
-
-</body>
-</html>        font-weight: 600;
-        font-size: 14px;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    input, select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: 0.3s;
-    }
-
-    input:focus, select:focus {
-        border-color: #4facfe;
-        outline: none;
-        box-shadow: 0 0 5px rgba(79,172,254,0.5);
-    }
-
-    .error {
-        color: red;
-        font-size: 12px;
-        margin-top: 3px;
-    }
-
-    button {
-        width: 100%;
-        padding: 12px;
-        background: #4facfe;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #2b7ed7;
-    }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-    <h2>Student Registration</h2>
-
-    <form onsubmit="return validateForm()">
-
-        <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="name">
-            <div id="nameError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="email">
-            <div id="emailError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Mobile Number</label>
-            <input type="text" id="phone">
-            <div id="phoneError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Age</label>
-            <input type="number" id="age">
-            <div id="ageError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Department</label>
-            <select id="department">
-                <option value="">Select Department</option>
-                <option>Computer Science (CS)</option>
-                <option>BCom</option>
-                <option>BBA</option>
-                <option>Mechanical</option>
-                <option>Electrical</option>
-            </select>
-            <div id="deptError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Course</label>
-            <select id="course">
-                <option value="">Select Course</option>
-                <option>BCA</option>
-                <option>BSc</option>
-                <option>BCom</option>
-                <option>BE</option>
-            </select>
-            <div id="courseError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password">
-            <div id="passwordError" class="error"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" id="confirmPassword">
-            <div id="confirmError" class="error"></div>
-        </div>
-
-        <button type="submit">Register</button>
-
-    </form>
-</div>
-
-<script>
-function validateForm() {
-    let valid = true;
-
-    let name = document.getElementById("name").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let phone = document.getElementById("phone").value.trim();
-    let age = document.getElementById("age").value;
-    let department = document.getElementById("department").value;
-    let course = document.getElementById("course").value;
-    let password = document.getElementById("password").value;
-    let confirmPassword = document.getElementById("confirmPassword").value;
-
-    document.querySelectorAll(".error").forEach(e => e.innerText = "");
-
-    // Name validation
-    let namePattern = /^[A-Za-z ]{3,}$/;
-    if (!name.match(namePattern)) {
-        document.getElementById("nameError").innerText =
-            "Enter valid name (min 3 letters, no numbers)";
-        valid = false;
-    }
-
-    // Email validation
-    let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-    if (!email.match(emailPattern)) {
-        document.getElementById("emailError").innerText =
-            "Enter valid email address";
-        valid = false;
-    }
-
-    // Phone validation
-    let phonePattern = /^[0-9]{10}$/;
-    if (!phone.match(phonePattern)) {
-        document.getElementById("phoneError").innerText =
-            "Enter valid 10-digit mobile number";
-        valid = false;
-    }
-
-    // Age validation
-    if (age === "" || age < 16 || age > 60) {
-        document.getElementById("ageError").innerText =
-            "Age must be between 16 and 60";
-        valid = false;
-    }
-
-    // Department validation
-    if (department === "") {
-        document.getElementById("deptError").innerText =
-            "Please select a department";
-        valid = false;
-    }
-
-    // Course validation
-    if (course === "") {
-        document.getElementById("courseError").innerText =
-            "Please select a course";
-        valid = false;
-    }
-
-    // Password validation
-    let passPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W]).{6,}$/;
-    if (!password.match(passPattern)) {
-        document.getElementById("passwordError").innerText =
-            "Min 6 chars, include uppercase, number & symbol";
-        valid = false;
-    }
-
-    // Confirm password
-    if (password !== confirmPassword) {
-        document.getElementById("confirmError").innerText =
-            "Passwords do not match";
-        valid = false;
-    }
-
-    // Save data
-    if (valid) {
-        let student = { name, email, phone, age, department, course };
 
         let students = JSON.parse(localStorage.getItem("students")) || [];
         students.push(student);
