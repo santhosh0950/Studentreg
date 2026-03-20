@@ -20,9 +20,11 @@
     .container {
         background: #ffffff;
         padding: 25px 30px;
-        width: 380px;
+        width: 400px;
         border-radius: 12px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        overflow-y: auto;
+        max-height: 95vh;
     }
 
     h2 {
@@ -35,6 +37,258 @@
 
     label {
         font-weight: 600;
+        font-size: 14px;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    textarea {
+        resize: none;
+        height: 70px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #4facfe;
+        outline: none;
+        box-shadow: 0 0 5px rgba(79,172,254,0.5);
+    }
+
+    .error {
+        color: red;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #4facfe;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #2b7ed7;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Student Registration</h2>
+
+    <form onsubmit="return validateForm()">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name">
+            <div id="nameError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email">
+            <div id="emailError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" id="phone">
+            <div id="phoneError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="age">
+            <div id="ageError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <select id="gender">
+                <option value="">Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+            <div id="genderError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Department</label>
+            <select id="department">
+                <option value="">Select Department</option>
+                <option>Computer Science (CS)</option>
+                <option>BCom</option>
+                <option>BBA</option>
+                <option>Mechanical</option>
+                <option>Electrical</option>
+            </select>
+            <div id="deptError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Course</label>
+            <select id="course">
+                <option value="">Select Course</option>
+                <option>BCA</option>
+                <option>BSc</option>
+                <option>BCom</option>
+                <option>BE</option>
+            </select>
+            <div id="courseError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Address</label>
+            <textarea id="address"></textarea>
+            <div id="addressError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password">
+            <div id="passwordError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword">
+            <div id="confirmError" class="error"></div>
+        </div>
+
+        <button type="submit">Register</button>
+
+    </form>
+</div>
+
+<script>
+function validateForm() {
+    let valid = true;
+
+    let name = document.getElementById("name").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let phone = document.getElementById("phone").value.trim();
+    let age = document.getElementById("age").value;
+    let gender = document.getElementById("gender").value;
+    let department = document.getElementById("department").value;
+    let course = document.getElementById("course").value;
+    let address = document.getElementById("address").value.trim();
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
+
+    document.querySelectorAll(".error").forEach(e => e.innerText = "");
+
+    // Name
+    let namePattern = /^[A-Za-z ]{3,}$/;
+    if (!name.match(namePattern)) {
+        document.getElementById("nameError").innerText =
+            "Enter valid name (min 3 letters)";
+        valid = false;
+    }
+
+    // Email
+    let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    if (!email.match(emailPattern)) {
+        document.getElementById("emailError").innerText =
+            "Enter valid email";
+        valid = false;
+    }
+
+    // Phone
+    let phonePattern = /^[0-9]{10}$/;
+    if (!phone.match(phonePattern)) {
+        document.getElementById("phoneError").innerText =
+            "Enter valid 10-digit number";
+        valid = false;
+    }
+
+    // Age
+    if (age === "" || age < 16 || age > 60) {
+        document.getElementById("ageError").innerText =
+            "Age must be 16–60";
+        valid = false;
+    }
+
+    // Gender
+    if (gender === "") {
+        document.getElementById("genderError").innerText =
+            "Select gender";
+        valid = false;
+    }
+
+    // Department
+    if (department === "") {
+        document.getElementById("deptError").innerText =
+            "Select department";
+        valid = false;
+    }
+
+    // Course
+    if (course === "") {
+        document.getElementById("courseError").innerText =
+            "Select course";
+        valid = false;
+    }
+
+    // Address
+    if (address.length < 10) {
+        document.getElementById("addressError").innerText =
+            "Address must be at least 10 characters";
+        valid = false;
+    }
+
+    // Password
+    let passPattern = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[\W]).{6,}$/;
+    if (!password.match(passPattern)) {
+        document.getElementById("passwordError").innerText =
+            "Min 6 chars, include uppercase, number & symbol";
+        valid = false;
+    }
+
+    // Confirm Password
+    if (password !== confirmPassword) {
+        document.getElementById("confirmError").innerText =
+            "Passwords do not match";
+        valid = false;
+    }
+
+    // Save
+    if (valid) {
+        let student = {
+            name, email, phone, age, gender,
+            department, course, address
+        };
+
+        let students = JSON.parse(localStorage.getItem("students")) || [];
+        students.push(student);
+        localStorage.setItem("students", JSON.stringify(students));
+
+        alert("Registration Successful!");
+        document.querySelector("form").reset();
+    }
+
+    return false;
+}
+</script>
+
+</body>
+</html>        font-weight: 600;
         font-size: 14px;
         display: block;
         margin-bottom: 5px;
